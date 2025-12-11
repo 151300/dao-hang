@@ -101,4 +101,3 @@ export const SECURITY_CONFIG = {
   maxUploadSize: 5 * 1024 * 1024, // 5MB
   allowedFileTypes: ['jpg', 'jpeg', 'png', 'gif', 'webp']
 };
-EOF
