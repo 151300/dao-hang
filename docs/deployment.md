@@ -1,4 +1,4 @@
-cat > docs/deployment.md << 'EOF'
+
 # Dao-Hang 部署指南
 
 ## 准备工作
