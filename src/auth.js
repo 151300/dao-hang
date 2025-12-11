@@ -55,4 +55,3 @@ export async function createSession(env, username) {
   
   return sessionToken;
 }
-EOF
