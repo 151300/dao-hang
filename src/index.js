@@ -1,4 +1,4 @@
-cat > src/index.js << 'EOF'
+
 /**
  * Dao-Hang 导航系统主入口
  * 版本: 1.0.0
