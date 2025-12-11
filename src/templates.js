@@ -1,8 +1,3 @@
-
-/**
- * HTML 模板模块
- */
-
 /**
  * 生成主页HTML
  */
@@ -12,6 +7,7 @@ export function generateHomePage(navData, env) {
     ? `background-image: url('${config.bgImage}'); background-size: cover; background-attachment: fixed;`
     : `background-color: ${config.bgColor || '#f8fafc'};`;
   
+  // 关键修复：这是一个完整、闭合的HTML模板字符串，以 </script></body></html> 结尾
   return `
     <!DOCTYPE html>
     <html lang="zh-CN">
