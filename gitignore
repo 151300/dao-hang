@@ -25,4 +25,3 @@ Thumbs.db
 # 上传文件
 public/uploads/*
 !public/uploads/README.md
-EOF
