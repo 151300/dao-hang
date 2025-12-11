@@ -1,4 +1,4 @@
-cat > src/storage.js << 'EOF'
+
 /**
  * 数据存储操作模块
  */
