@@ -1,4 +1,3 @@
-
 /**
  * 数据存储操作模块
  */
@@ -10,6 +9,9 @@ import { DEFAULT_NAV_DATA } from './config.js';
  */
 export async function loadNavData(env) {
   try {
+    // 关键修复：补全了 console.log 的闭合括号
+    console.log('[DEBUG loadNavData] env.NAV_STORE 是否存在？', typeof env.NAV_STORE, '绑定列表：', Object.keys(env));
+    
     const data = await env.NAV_STORE.get('nav_data');
     
     if (!data) {
