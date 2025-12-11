@@ -1,0 +1,7 @@
+cat > public/uploads/README.md << 'EOF'
+# 上传文件目录
+
+此目录用于存储用户上传的文件，如背景图片等。
+
+请不要删除此 README.md 文件。
+EOF
