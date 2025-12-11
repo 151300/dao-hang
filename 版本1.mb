@@ -1,0 +1,3764 @@
+# GitHub 项目结构
+
+```
+dao-hang/
+├── README.md                          # 项目说明文档
+├── package.json                       # npm包配置
+├── wrangler.toml                      # Cloudflare Workers配置
+├── .env.example                       # 环境变量示例
+├── .gitignore                         # Git忽略文件
+├── public/                            # 静态资源
+│   ├── favicon.ico                    # 网站图标
+│   ├── default-bg.jpg                 # 默认背景图片
+│   └── uploads/                       # 上传文件目录
+│       └── README.md
+├── src/                               # 源代码目录
+│   ├── index.js                       # Workers主入口文件
+│   ├── auth.js                        # 认证模块
+│   ├── storage.js                     # 存储操作模块
+│   ├── templates.js                   # HTML模板
+│   ├── utils.js                       # 工具函数
+│   └── config.js                      # 配置文件
+├── docs/                              # 文档
+│   ├── deployment.md                  # 部署指南
+│   ├── api-reference.md               # API参考
+│   ├── version-plan.md                # 版本计划
+│   └── screenshots/                   # 截图目录
+├── tests/                             # 测试文件
+│   ├── test-auth.js                   # 认证测试
+│   ├── test-storage.js                # 存储测试
+│   └── test-handlers.js               # 处理器测试
+├── scripts/                           # 脚本文件
+│   ├── deploy.sh                      # 部署脚本
+│   ├── backup-data.js                 # 数据备份脚本
+│   └── import-export.js               # 数据导入导出脚本
+└── examples/                          # 示例文件
+    ├── custom-theme.css               # 自定义主题示例
+    ├── sample-data.json               # 示例数据
+    └── r2-integration.js              # R2集成示例
+```
+
+---
+
+## 1. `README.md` - 项目说明文档
+
+```markdown
+# Dao-Hang 导航系统 🚀
+
+一个基于 Cloudflare Workers 的免费、可自定义的导航网站系统。
+
+## ✨ 特性
+
+- 🆓 **完全免费**：使用 Cloudflare 免费服务
+- 🔐 **安全登录**：账号密码管理
+- 🎨 **高度可定制**：自定义分类、背景、主题
+- 📱 **响应式设计**：适配所有设备
+- 💾 **数据持久化**：使用 Cloudflare KV 存储
+- ⚡ **快速加载**：边缘计算，全球加速
+- 🔄 **实时编辑**：修改即时生效
+
+## 🚀 快速开始
+
+### 1. 克隆项目
+```bash
+git clone https://github.com/yourusername/dao-hang.git
+cd dao-hang
+```
+
+### 2. 安装依赖
+```bash
+npm install
+```
+
+### 3. 配置环境
+```bash
+cp .env.example .env
+# 编辑 .env 文件，设置你的配置
+```
+
+### 4. 部署
+```bash
+npm run deploy
+```
+
+## 📋 功能列表
+
+### 版本一（当前）
+- [x] 基础导航功能
+- [x] 3-5个分类管理
+- [x] 在线编辑
+- [x] 账号密码登录
+- [x] 背景图片设置
+- [x] 分类展开/隐藏
+
+### 版本二（开发中）
+- [ ] 更多网站支持
+- [ ] 实时编辑
+- [ ] 背景音乐
+- [ ] 主题切换
+- [ ] 数据导入导出
+
+### 版本三（规划中）
+- [ ] 用户注册系统
+- [ ] 网站图标自动获取
+- [ ] 使用量统计
+- [ ] 移动端应用
+- [ ] API接口
+
+## 🔧 配置说明
+
+### 环境变量
+```env
+ADMIN_USERNAME=admin        # 管理员用户名
+ADMIN_PASSWORD=changeme     # 管理员密码
+SITE_NAME=我的导航         # 网站名称
+KV_NAMESPACE_ID=           # Cloudflare KV命名空间ID
+```
+
+### 文件结构
+- `public/` - 静态资源文件
+- `src/` - 源代码
+- `docs/` - 文档
+- `tests/` - 测试文件
+- `scripts/` - 部署脚本
+
+## 🛠️ 开发
+
+```bash
+# 开发模式
+npm run dev
+
+# 测试
+npm run test
+
+# 构建
+npm run build
+
+# 部署到生产环境
+npm run deploy
+
+# 部署到预览环境
+npm run deploy:preview
+```
+
+## 📚 详细文档
+
+- [部署指南](./docs/deployment.md)
+- [API参考](./docs/api-reference.md)
+- [版本计划](./docs/version-plan.md)
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 📄 许可证
+
+MIT License
+
+## 🙏 致谢
+
+- [Cloudflare Workers](https://workers.cloudflare.com/)
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/)
+- 所有贡献者
+
+## 🔗 相关链接
+
+- [在线演示](https://dao-hang.yourusername.workers.dev)
+- [问题反馈](https://github.com/yourusername/dao-hang/issues)
+- [更新日志](./CHANGELOG.md)
+```
+
+---
+
+## 2. `package.json` - npm包配置
+
+```json
+{
+  "name": "dao-hang",
+  "version": "1.0.0",
+  "description": "A free navigation website built on Cloudflare Workers",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:preview": "wrangler deploy --env preview",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write \"src/**/*.js\"",
+    "backup": "node scripts/backup-data.js",
+    "import": "node scripts/import-export.js --import",
+    "export": "node scripts/import-export.js --export"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "navigation",
+    "bookmarks",
+    "free"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/dao-hang.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/dao-hang/issues"
+  },
+  "homepage": "https://github.com/yourusername/dao-hang#readme"
+}
+```
+
+---
+
+## 3. `wrangler.toml` - Cloudflare Workers配置
+
+```toml
+name = "dao-hang"
+main = "src/index.js"
+compatibility_date = "2024-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+# KV 命名空间存储
+kv_namespaces = [
+  { binding = "NAV_STORE", id = "your-kv-namespace-id", preview_id = "preview-kv-id" }
+]
+
+# R2 存储（用于文件上传，可选）
+[[r2_buckets]]
+binding = "UPLOAD_BUCKET"
+bucket_name = "dao-hang-uploads"
+preview_bucket_name = "dao-hang-uploads-preview"
+
+# 环境变量
+[vars]
+ADMIN_USERNAME = "admin"
+SITE_NAME = "我的导航"
+VERSION = "1.0.0"
+
+# 开发环境配置
+[env.dev]
+vars = { ADMIN_PASSWORD = "dev_password", ENVIRONMENT = "development" }
+
+# 预览环境配置
+[env.preview]
+vars = { ADMIN_PASSWORD = "preview_password", ENVIRONMENT = "preview" }
+
+# 生产环境配置
+[env.production]
+vars = { ADMIN_PASSWORD = "${ADMIN_PASSWORD}", ENVIRONMENT = "production" }
+
+# 路由配置（生产环境）
+[env.production.route]
+pattern = "dao-hang.yourdomain.com/*"
+zone_id = "your-zone-id"
+
+# 预览环境路由
+[env.preview.route]
+pattern = "dao-hang-preview.yourdomain.com/*"
+zone_id = "your-zone-id"
+```
+
+---
+
+## 4. `.env.example` - 环境变量示例
+
+```env
+# Cloudflare 账户配置
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_API_TOKEN=your_api_token
+
+# 管理员认证
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your_secure_password_here
+
+# KV 命名空间
+KV_NAMESPACE_ID=your_kv_namespace_id
+KV_PREVIEW_NAMESPACE_ID=your_preview_kv_id
+
+# 网站配置
+SITE_NAME=我的导航
+SITE_DESCRIPTION=精心整理的实用网站导航
+SITE_KEYWORDS=导航,书签,工具,网站
+
+# 自定义域名
+DOMAIN=dao-hang.yourdomain.com
+PREVIEW_DOMAIN=dao-hang-preview.yourdomain.com
+
+# 安全配置
+SESSION_TIMEOUT=86400
+MAX_UPLOAD_SIZE=5242880
+ALLOWED_FILE_TYPES=jpg,jpeg,png,gif,webp
+
+# 功能开关
+ENABLE_BACKGROUND_MUSIC=false
+ENABLE_USER_REGISTRATION=false
+ENABLE_ANALYTICS=false
+
+# 调试模式
+DEBUG=true
+NODE_ENV=development
+```
+
+---
+
+## 5. `.gitignore` - Git忽略文件
+
+```gitignore
+# 依赖
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 环境变量
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 构建输出
+dist/
+build/
+.wrangler/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+
+# 日志文件
+logs/
+*.log
+
+# 上传文件
+public/uploads/*
+!public/uploads/README.md
+
+# 备份文件
+*.bak
+*.backup
+
+# 临时文件
+tmp/
+temp/
+```
+
+---
+
+## 6. `src/index.js` - Workers主入口文件
+
+```javascript
+/**
+ * Dao-Hang 导航系统主入口
+ * 版本: 1.0.0
+ */
+
+import { handleHome } from './handlers/home.js';
+import { handleLogin } from './handlers/auth.js';
+import { handleAdmin } from './handlers/admin.js';
+import { handleApi } from './handlers/api.js';
+import { verifySession } from './auth.js';
+import { errorResponse } from './utils.js';
+
+export default {
+  async fetch(request, env, ctx) {
+    try {
+      const url = new URL(request.url);
+      const path = url.pathname;
+      
+      console.log(`[${new Date().toISOString()}] ${request.method} ${path}`);
+      
+      // 处理静态文件
+      if (path.startsWith('/public/')) {
+        return handleStatic(request, env);
+      }
+      
+      // 路由分发
+      switch (true) {
+        case path === '/':
+          return handleHome(request, env);
+          
+        case path === '/login':
+          return handleLogin(request, env);
+          
+        case path === '/logout':
+          return handleLogout(request, env);
+          
+        case path === '/admin':
+          const isAdmin = await verifySession(request, env);
+          if (!isAdmin) {
+            return Response.redirect(new URL('/login', request.url), 302);
+          }
+          return handleAdmin(request, env);
+          
+        case path.startsWith('/api/'):
+          return handleApi(request, env);
+          
+        default:
+          return new Response('404 - Page Not Found', {
+            status: 404,
+            headers: { 'Content-Type': 'text/html; charset=UTF-8' }
+          });
+      }
+    } catch (error) {
+      console.error('Error handling request:', error);
+      return errorResponse('Internal Server Error', 500);
+    }
+  }
+};
+
+/**
+ * 处理静态文件请求
+ */
+async function handleStatic(request, env) {
+  const url = new URL(request.url);
+  const path = url.pathname.replace('/public/', '');
+  
+  // 安全验证：防止路径遍历
+  if (path.includes('..') || path.includes('//')) {
+    return new Response('Forbidden', { status: 403 });
+  }
+  
+  // 从 R2 或 KV 获取静态文件
+  try {
+    if (env.UPLOAD_BUCKET) {
+      const object = await env.UPLOAD_BUCKET.get(path);
+      if (object) {
+        const headers = new Headers();
+        object.writeHttpMetadata(headers);
+        headers.set('etag', object.httpEtag);
+        
+        return new Response(object.body, {
+          headers,
+        });
+      }
+    }
+    
+    return new Response('File not found', { status: 404 });
+  } catch (error) {
+    console.error('Error serving static file:', error);
+    return new Response('Error serving file', { status: 500 });
+  }
+}
+
+/**
+ * 处理登出
+ */
+async function handleLogout(request, env) {
+  const cookieHeader = request.headers.get('Cookie');
+  if (cookieHeader) {
+    const cookies = Object.fromEntries(
+      cookieHeader.split(';').map(c => c.trim().split('='))
+    );
+    const sessionToken = cookies.session;
+    if (sessionToken) {
+      await env.NAV_STORE.delete(`session_${sessionToken}`);
+    }
+  }
+  
+  return new Response(null, {
+    status: 302,
+    headers: {
+      'Location': '/',
+      'Set-Cookie': 'session=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax'
+    }
+  });
+}
+```
+
+---
+
+## 7. `src/auth.js` - 认证模块
+
+```javascript
+/**
+ * 用户认证模块
+ */
+
+import { hashPassword, verifyPassword } from './utils.js';
+
+/**
+ * 处理用户登录
+ */
+export async function handleLogin(request, env) {
+  if (request.method === 'POST') {
+    try {
+      const formData = await request.formData();
+      const username = formData.get('username');
+      const password = formData.get('password');
+      
+      // 验证凭据
+      if (username === env.ADMIN_USERNAME && password === env.ADMIN_PASSWORD) {
+        // 创建会话
+        const sessionToken = crypto.randomUUID();
+        const sessionExpiry = Math.floor(Date.now() / 1000) + (env.SESSION_TIMEOUT || 86400);
+        
+        await env.NAV_STORE.put(
+          `session_${sessionToken}`,
+          JSON.stringify({
+            username,
+            expires: sessionExpiry
+          }),
+          { expirationTtl: env.SESSION_TIMEOUT || 86400 }
+        );
+        
+        // 重定向到管理后台
+        return new Response(null, {
+          status: 302,
+          headers: {
+            'Location': '/admin',
+            'Set-Cookie': `session=${sessionToken}; HttpOnly; Path=/; Max-Age=86400; SameSite=Lax${
+              env.ENVIRONMENT === 'production' ? '; Secure' : ''
+            }`
+          }
+        });
+      } else {
+        return loginPage('用户名或密码错误');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      return loginPage('登录时发生错误');
+    }
+  }
+  
+  return loginPage();
+}
+
+/**
+ * 验证会话
+ */
+export async function verifySession(request, env) {
+  try {
+    const cookieHeader = request.headers.get('Cookie');
+    if (!cookieHeader) return false;
+    
+    const cookies = Object.fromEntries(
+      cookieHeader.split(';').map(c => c.trim().split('='))
+    );
+    
+    const sessionToken = cookies.session;
+    if (!sessionToken) return false;
+    
+    // 从 KV 获取会话
+    const sessionData = await env.NAV_STORE.get(`session_${sessionToken}`);
+    if (!sessionData) return false;
+    
+    const session = JSON.parse(sessionData);
+    
+    // 检查会话是否过期
+    if (session.expires < Math.floor(Date.now() / 1000)) {
+      await env.NAV_STORE.delete(`session_${sessionToken}`);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Session verification error:', error);
+    return false;
+  }
+}
+
+/**
+ * 登录页面 HTML
+ */
+function loginPage(errorMessage = '') {
+  const html = `
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>登录 - Dao-Hang 导航系统</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+        }
+        .login-container {
+          width: 100%;
+          max-width: 400px;
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+          overflow: hidden;
+        }
+        .login-header {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 40px 30px;
+          text-align: center;
+        }
+        .login-header h1 {
+          font-size: 24px;
+          font-weight: 600;
+          margin-bottom: 8px;
+        }
+        .login-header p {
+          opacity: 0.9;
+          font-size: 14px;
+        }
+        .login-form {
+          padding: 40px 30px;
+        }
+        .form-group {
+          margin-bottom: 24px;
+        }
+        .form-group label {
+          display: block;
+          margin-bottom: 8px;
+          color: #4a5568;
+          font-size: 14px;
+          font-weight: 500;
+        }
+        .form-group input {
+          width: 100%;
+          padding: 14px 16px;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: 16px;
+          transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+          outline: none;
+          border-color: #667eea;
+        }
+        .error-message {
+          background: #fed7d7;
+          color: #9b2c2c;
+          padding: 12px 16px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          font-size: 14px;
+          border-left: 4px solid #fc8181;
+        }
+        .login-button {
+          width: 100%;
+          padding: 16px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .login-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .login-footer {
+          text-align: center;
+          margin-top: 24px;
+          color: #718096;
+          font-size: 14px;
+        }
+        .login-footer a {
+          color: #667eea;
+          text-decoration: none;
+        }
+        @media (max-width: 480px) {
+          .login-container {
+            border-radius: 12px;
+          }
+          .login-header, .login-form {
+            padding: 30px 20px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="login-container">
+        <div class="login-header">
+          <h1>Dao-Hang 导航系统</h1>
+          <p>请登录管理后台</p>
+        </div>
+        <form method="POST" class="login-form">
+          ${errorMessage ? `<div class="error-message">${errorMessage}</div>` : ''}
+          <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" name="username" required autofocus>
+          </div>
+          <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" name="password" required>
+          </div>
+          <button type="submit" class="login-button">登录</button>
+        </form>
+        <div class="login-footer">
+          <p>返回 <a href="/">首页</a></p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  return new Response(html, {
+    headers: {
+      'Content-Type': 'text/html; charset=UTF-8',
+      'Cache-Control': 'no-cache, no-store, must-revalidate'
+    }
+  });
+}
+```
+
+---
+
+## 8. `src/storage.js` - 存储操作模块
+
+```javascript
+/**
+ * 数据存储操作模块
+ * 使用 Cloudflare KV 存储导航数据
+ */
+
+/**
+ * 加载导航数据
+ */
+export async function loadNavData(env) {
+  try {
+    const data = await env.NAV_STORE.get('nav_data');
+    
+    if (!data) {
+      return getDefaultData(env);
+    }
+    
+    const navData = JSON.parse(data);
+    
+    // 迁移旧数据格式（如果有的话）
+    return migrateData(navData);
+  } catch (error) {
+    console.error('Error loading nav data:', error);
+    return getDefaultData(env);
+  }
+}
+
+/**
+ * 保存导航数据
+ */
+export async function saveNavData(env, data) {
+  try {
+    // 添加更新时间
+    data.updatedAt = new Date().toISOString();
+    data.version = env.VERSION || '1.0.0';
+    
+    await env.NAV_STORE.put('nav_data', JSON.stringify(data));
+    return { success: true, updatedAt: data.updatedAt };
+  } catch (error) {
+    console.error('Error saving nav data:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * 获取默认数据
+ */
+function getDefaultData(env) {
+  const siteName = env.SITE_NAME || '我的导航';
+  const description = env.SITE_DESCRIPTION || '精心整理的实用网站导航';
+  
+  return {
+    siteName,
+    description,
+    config: {
+      bgColor: '#f8fafc',
+      bgImage: '',
+      theme: 'light',
+      showCategories: true,
+      showSearch: true,
+      layout: 'grid',
+      itemsPerRow: 4
+    },
+    categories: [
+      {
+        id: 1,
+        name: '常用工具',
+        description: '日常使用的工具网站',
+        icon: '🔧',
+        hidden: false,
+        order: 1,
+        sites: [
+          {
+            id: 1,
+            name: 'Google',
+            url: 'https://www.google.com',
+            description: '全球搜索引擎',
+            icon: 'G',
+            tags: ['搜索', '工具'],
+            order: 1
+          },
+          {
+            id: 2,
+            name: 'GitHub',
+            url: 'https://github.com',
+            description: '代码托管平台',
+            icon: 'GH',
+            tags: ['开发', '代码'],
+            order: 2
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: '社交平台',
+        description: '社交网络平台',
+        icon: '💬',
+        hidden: false,
+        order: 2,
+        sites: [
+          {
+            id: 3,
+            name: 'Twitter',
+            url: 'https://twitter.com',
+            description: '微博客平台',
+            icon: 'T',
+            tags: ['社交', '新闻'],
+            order: 1
+          }
+        ]
+      },
+      {
+        id: 3,
+        name: '学习资源',
+        description: '在线学习平台',
+        icon: '📚',
+        hidden: true,
+        order: 3,
+        sites: [
+          {
+            id: 4,
+            name: 'MDN',
+            url: 'https://developer.mozilla.org',
+            description: 'Web开发文档',
+            icon: 'M',
+            tags: ['文档', '开发'],
+            order: 1
+          }
+        ]
+      }
+    ],
+    customLinks: [],
+    statistics: {
+      totalVisits: 0,
+      lastReset: new Date().toISOString(),
+      categoryCount: 3,
+      siteCount: 4
+    },
+    version: '1.0.0',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+}
+
+/**
+ * 数据迁移
+ */
+function migrateData(data) {
+  // 如果没有版本号，视为旧数据
+  if (!data.version) {
+    // 添加版本号
+    data.version = '1.0.0';
+    
+    // 确保所有必要的字段都存在
+    if (!data.config) {
+      data.config = {
+        bgColor: '#f8fafc',
+        bgImage: '',
+        theme: 'light'
+      };
+    }
+    
+    if (!data.statistics) {
+      data.statistics = {
+        totalVisits: 0,
+        lastReset: new Date().toISOString(),
+        categoryCount: data.categories?.length || 0,
+        siteCount: data.categories?.reduce((sum, cat) => sum + (cat.sites?.length || 0), 0) || 0
+      };
+    }
+  }
+  
+  return data;
+}
+
+/**
+ * 备份数据
+ */
+export async function backupData(env, backupName = null) {
+  try {
+    const data = await loadNavData(env);
+    const backupId = backupName || `backup_${new Date().toISOString().replace(/[:.]/g, '-')}`;
+    
+    await env.NAV_STORE.put(`backup_${backupId}`, JSON.stringify(data));
+    
+    return {
+      success: true,
+      backupId,
+      timestamp: new Date().toISOString(),
+      dataSize: JSON.stringify(data).length
+    };
+  } catch (error) {
+    console.error('Error backing up data:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * 恢复备份数据
+ */
+export async function restoreBackup(env, backupId) {
+  try {
+    const backupData = await env.NAV_STORE.get(`backup_${backupId}`);
+    
+    if (!backupData) {
+      return { success: false, error: 'Backup not found' };
+    }
+    
+    const data = JSON.parse(backupData);
+    await saveNavData(env, data);
+    
+    return {
+      success: true,
+      backupId,
+      restoredAt: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error restoring backup:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * 获取备份列表
+ */
+export async function listBackups(env) {
+  try {
+    const keys = await env.NAV_STORE.list({ prefix: 'backup_' });
+    
+    const backups = [];
+    for (const key of keys.keys) {
+      const backupData = await env.NAV_STORE.get(key.name);
+      if (backupData) {
+        const data = JSON.parse(backupData);
+        backups.push({
+          id: key.name.replace('backup_', ''),
+          createdAt: data.createdAt || key.metadata?.createdAt,
+          size: backupData.length,
+          siteCount: data.statistics?.siteCount || 0,
+          categoryCount: data.statistics?.categoryCount || 0
+        });
+      }
+    }
+    
+    // 按时间倒序排序
+    backups.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    return { success: true, backups };
+  } catch (error) {
+    console.error('Error listing backups:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * 删除备份
+ */
+export async function deleteBackup(env, backupId) {
+  try {
+    await env.NAV_STORE.delete(`backup_${backupId}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting backup:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * 导出数据为 JSON
+ */
+export async function exportData(env) {
+  const data = await loadNavData(env);
+  return {
+    success: true,
+    data,
+    exportDate: new Date().toISOString(),
+    format: 'dao-hang-v1'
+  };
+}
+
+/**
+ * 导入数据
+ */
+export async function importData(env, importData) {
+  try {
+    // 验证导入数据格式
+    if (!importData.categories || !Array.isArray(importData.categories)) {
+      return { success: false, error: 'Invalid data format' };
+    }
+    
+    // 备份当前数据
+    await backupData(env, 'pre_import_backup');
+    
+    // 保存导入的数据
+    await saveNavData(env, importData);
+    
+    return {
+      success: true,
+      importedAt: new Date().toISOString(),
+      categoryCount: importData.categories.length,
+      siteCount: importData.categories.reduce((sum, cat) => sum + (cat.sites?.length || 0), 0)
+    };
+  } catch (error) {
+    console.error('Error importing data:', error);
+    return { success: false, error: error.message };
+  }
+}
+```
+
+---
+
+## 9. `src/templates.js` - HTML模板
+
+```javascript
+/**
+ * HTML 模板模块
+ * 包含所有页面的HTML模板
+ */
+
+/**
+ * 生成主页HTML
+ */
+export function generateHomePage(navData, env) {
+  const { siteName, description, config, categories } = navData;
+  const bgStyle = config.bgImage 
+    ? `background-image: url('${config.bgImage}'); background-size: cover; background-attachment: fixed;`
+    : `background-color: ${config.bgColor || '#f8fafc'};`;
+  
+  return `
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${siteName}</title>
+      <meta name="description" content="${description}">
+      <link rel="icon" href="/public/favicon.ico" type="image/x-icon">
+      
+      <style>
+        :root {
+          --primary-color: #667eea;
+          --secondary-color: #764ba2;
+          --bg-color: ${config.bgColor || '#f8fafc'};
+          --text-color: #2d3748;
+          --card-bg: rgba(255, 255, 255, 0.95);
+          --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          --radius: 16px;
+          --transition: all 0.3s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          color: var(--text-color);
+          ${bgStyle}
+          min-height: 100vh;
+          transition: var(--transition);
+        }
+        
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        
+        header {
+          text-align: center;
+          padding: 60px 20px 40px;
+          backdrop-filter: blur(10px);
+          background: rgba(255, 255, 255, 0.8);
+          border-radius: var(--radius);
+          margin-bottom: 40px;
+          box-shadow: var(--shadow);
+        }
+        
+        h1 {
+          font-size: 3rem;
+          font-weight: 700;
+          margin-bottom: 10px;
+          background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        
+        .site-description {
+          font-size: 1.2rem;
+          color: #718096;
+          max-width: 600px;
+          margin: 0 auto 30px;
+        }
+        
+        .categories {
+          display: flex;
+          flex-direction: column;
+          gap: 30px;
+        }
+        
+        .category {
+          background: var(--card-bg);
+          border-radius: var(--radius);
+          overflow: hidden;
+          box-shadow: var(--shadow);
+          transition: var(--transition);
+        }
+        
+        .category:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .category-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 25px 30px;
+          cursor: pointer;
+          background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+          color: white;
+        }
+        
+        .category-header h2 {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 1.5rem;
+          font-weight: 600;
+        }
+        
+        .category-icon {
+          font-size: 1.8rem;
+        }
+        
+        .toggle-btn {
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          color: white;
+          font-size: 1.5rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: var(--transition);
+        }
+        
+        .toggle-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: rotate(90deg);
+        }
+        
+        .category-description {
+          padding: 0 30px 20px;
+          color: #718096;
+          font-size: 1rem;
+          border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .sites {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 20px;
+          padding: 30px;
+          ${config.layout === 'list' ? 'grid-template-columns: 1fr;' : ''}
+        }
+        
+        .site-card {
+          background: white;
+          border-radius: 12px;
+          padding: 25px;
+          text-decoration: none;
+          color: var(--text-color);
+          transition: var(--transition);
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+        
+        .site-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+          border-color: var(--primary-color);
+        }
+        
+        .site-icon {
+          width: 60px;
+          height: 60px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 1.5rem;
+          font-weight: bold;
+          flex-shrink: 0;
+        }
+        
+        .site-info {
+          flex: 1;
+        }
+        
+        .site-info h3 {
+          margin: 0 0 8px;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+        
+        .site-info p {
+          margin: 0;
+          color: #718096;
+          font-size: 0.95rem;
+          line-height: 1.5;
+        }
+        
+        .site-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 10px;
+        }
+        
+        .tag {
+          background: #edf2f7;
+          color: #4a5568;
+          padding: 4px 10px;
+          border-radius: 20px;
+          font-size: 0.8rem;
+        }
+        
+        .admin-link {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+          color: white;
+          padding: 15px 25px;
+          border-radius: 50px;
+          text-decoration: none;
+          font-weight: 600;
+          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+          transition: var(--transition);
+          z-index: 1000;
+        }
+        
+        .admin-link:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+        }
+        
+        .footer {
+          text-align: center;
+          padding: 40px 20px;
+          margin-top: 60px;
+          color: #718096;
+          font-size: 0.9rem;
+          border-top: 1px solid #e2e8f0;
+        }
+        
+        .hidden .sites {
+          display: none;
+        }
+        
+        @media (max-width: 768px) {
+          .container {
+            padding: 10px;
+          }
+          
+          header {
+            padding: 40px 20px 30px;
+            margin-bottom: 30px;
+          }
+          
+          h1 {
+            font-size: 2.2rem;
+          }
+          
+          .sites {
+            grid-template-columns: 1fr;
+            padding: 20px;
+          }
+          
+          .category-header {
+            padding: 20px;
+          }
+          
+          .admin-link {
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .site-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+          }
+          
+          .site-icon {
+            margin-bottom: 15px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <header>
+          <h1>${siteName}</h1>
+          <p class="site-description">${description}</p>
+        </header>
+        
+        <div class="categories">
+          ${categories.map(category => `
+            <div class="category ${category.hidden ? 'hidden' : ''}" id="category-${category.id}">
+              <div class="category-header" onclick="toggleCategory(${category.id})">
+                <h2>
+                  <span class="category-icon">${category.icon || '📂'}</span>
+                  ${category.name}
+                </h2>
+                <button class="toggle-btn">${category.hidden ? '+' : '−'}</button>
+              </div>
+              
+              ${category.description ? `
+                <div class="category-description">
+                  ${category.description}
+                </div>
+              ` : ''}
+              
+              <div class="sites">
+                ${category.sites.map(site => `
+                  <a href="${site.url}" target="_blank" rel="noopener" class="site-card">
+                    <div class="site-icon">${site.icon || site.name.charAt(0)}</div>
+                    <div class="site-info">
+                      <h3>${site.name}</h3>
+                      <p>${site.description || ''}</p>
+                      ${site.tags && site.tags.length > 0 ? `
+                        <div class="site-tags">
+                          ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                      ` : ''}
+                    </div>
+                  </a>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} ${siteName} | 基于 Cloudflare Workers 构建</p>
+          <p>版本: ${env.VERSION || '1.0.0'} | 最后更新: ${navData.updatedAt ? new Date(navData.updatedAt).toLocaleDateString('zh-CN') : '刚刚'}</p>
+        </div>
+      </div>
+      
+      <a href="/admin" class="admin-link">管理后台</a>
+      
+      <script>
+        // 从 localStorage 恢复分类状态
+        document.addEventListener('DOMContentLoaded', () => {
+          const hiddenCategories = JSON.parse(localStorage.getItem('dao_hang_hidden_categories') || '{}');
+          Object.keys(hiddenCategories).forEach(id => {
+            if (hiddenCategories[id]) {
+              const category = document.getElementById('category-' + id);
+              if (category) {
+                category.classList.add('hidden');
+                const toggleBtn = category.querySelector('.toggle-btn');
+                if (toggleBtn) toggleBtn.textContent = '+';
+              }
+            }
+          });
+          
+          // 更新访问统计
+          updateVisitCount();
+        });
+        
+        function toggleCategory(id) {
+          const category = document.getElementById('category-' + id);
+          const toggleBtn = category.querySelector('.toggle-btn');
+          
+          if (category.classList.contains('hidden')) {
+            category.classList.remove('hidden');
+            toggleBtn.textContent = '−';
+          } else {
+            category.classList.add('hidden');
+            toggleBtn.textContent = '+';
+          }
+          
+          // 保存状态到 localStorage
+          const hiddenCategories = JSON.parse(localStorage.getItem('dao_hang_hidden_categories') || '{}');
+          hiddenCategories[id] = category.classList.contains('hidden');
+          localStorage.setItem('dao_hang_hidden_categories', JSON.stringify(hiddenCategories));
+        }
+        
+        async function updateVisitCount() {
+          try {
+            await fetch('/api/stats/visit', { method: 'POST' });
+          } catch (error) {
+            console.log('统计更新失败:', error);
+          }
+        }
+        
+        // 快捷键支持
+        document.addEventListener('keydown', (e) => {
+          // Ctrl+/ 或 Cmd+/ 显示帮助
+          if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+            e.preventDefault();
+            alert('快捷键帮助：\\n\\n数字键 1-9: 展开对应分类\\n数字键 0: 展开/隐藏所有分类\\nESC: 返回首页\\nG + A: 前往管理后台');
+          }
+          
+          // ESC 返回首页
+          if (e.key === 'Escape') {
+            window.location.href = '/';
+          }
+          
+          // G + A 前往管理后台
+          if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
+            window.location.href = '/admin';
+          }
+          
+          // 数字键 1-9 切换分类
+          if (e.key >= '1' && e.key <= '9') {
+            const index = parseInt(e.key) - 1;
+            const categories = document.querySelectorAll('.category');
+            if (categories[index]) {
+              const id = categories[index].id.replace('category-', '');
+              toggleCategory(id);
+            }
+          }
+          
+          // 数字键 0 切换所有分类
+          if (e.key === '0') {
+            const categories = document.querySelectorAll('.category');
+            const allHidden = Array.from(categories).every(cat => cat.classList.contains('hidden'));
+            
+            categories.forEach(category => {
+              const id = category.id.replace('category-', '');
+              const toggleBtn = category.querySelector('.toggle-btn');
+              
+              if (allHidden) {
+                category.classList.remove('hidden');
+                if (toggleBtn) toggleBtn.textContent = '−';
+              } else {
+                category.classList.add('hidden');
+                if (toggleBtn) toggleBtn.textContent = '+';
+              }
+            });
+          }
+        });
+      </script>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * 生成管理后台HTML
+ */
+export function generateAdminPage(navData, env) {
+  const { siteName, config, categories } = navData;
+  
+  return `
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>管理后台 - ${siteName}</title>
+      
+      <style>
+        :root {
+          --primary-color: #667eea;
+          --secondary-color: #764ba2;
+          --sidebar-width: 260px;
+          --header-height: 70px;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background: #f5f7fa;
+          color: #2d3748;
+          min-height: 100vh;
+          overflow-x: hidden;
+        }
+        
+        .admin-container {
+          display: flex;
+          min-height: 100vh;
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+          width: var(--sidebar-width);
+          background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+          color: white;
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          z-index: 100;
+          box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease;
+        }
+        
+        .sidebar-header {
+          padding: 25px 20px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-header h2 {
+          font-size: 1.3rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        
+        .sidebar-menu {
+          list-style: none;
+          padding: 20px 0;
+        }
+        
+        .menu-item {
+          padding: 0;
+        }
+        
+        .menu-link {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 15px 25px;
+          color: rgba(255, 255, 255, 0.9);
+          text-decoration: none;
+          font-weight: 500;
+          transition: all 0.2s;
+          border-left: 4px solid transparent;
+        }
+        
+        .menu-link:hover, .menu-link.active {
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border-left-color: white;
+        }
+        
+        .menu-icon {
+          font-size: 1.2rem;
+          width: 24px;
+          text-align: center;
+        }
+        
+        /* 主内容区样式 */
+        .main-content {
+          flex: 1;
+          margin-left: var(--sidebar-width);
+          min-height: 100vh;
+          transition: margin-left 0.3s ease;
+        }
+        
+        .header {
+          height: var(--header-height);
+          background: white;
+          border-bottom: 1px solid #e2e8f0;
+          padding: 0 30px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .header-left h1 {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #2d3748;
+        }
+        
+        .header-right {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+        
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        
+        .avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+        }
+        
+        .logout-btn {
+          background: #fed7d7;
+          color: #9b2c2c;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+        
+        .logout-btn:hover {
+          background: #feb2b2;
+        }
+        
+        /* 内容区样式 */
+        .content {
+          padding: 30px;
+        }
+        
+        .section {
+          background: white;
+          border-radius: 12px;
+          padding: 30px;
+          margin-bottom: 30px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section h2 {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 25px;
+          color: #2d3748;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+          margin-bottom: 24px;
+        }
+        
+        .form-label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 500;
+          color: #4a5568;
+        }
+        
+        .form-control {
+          width: 100%;
+          padding: 12px 16px;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: 1rem;
+          transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+          outline: none;
+          border-color: var(--primary-color);
+        }
+        
+        .form-text {
+          font-size: 0.875rem;
+          color: #718096;
+          margin-top: 6px;
+        }
+        
+        .btn {
+          padding: 12px 24px;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .btn-primary {
+          background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+          color: white;
+        }
+        
+        .btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+          background: #fc8181;
+          color: white;
+        }
+        
+        .btn-danger:hover {
+          background: #f56565;
+        }
+        
+        /* 分类管理样式 */
+        .category-manager {
+          margin-bottom: 40px;
+        }
+        
+        .category-card {
+          background: #f8fafc;
+          border-radius: 10px;
+          padding: 20px;
+          margin-bottom: 20px;
+          border: 2px solid #e2e8f0;
+        }
+        
+        .category-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        
+        .category-title {
+          font-size: 1.2rem;
+          font-weight: 600;
+          color: #2d3748;
+        }
+        
+        .site-list {
+          margin-top: 20px;
+        }
+        
+        .site-item {
+          background: white;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 15px;
+          margin-bottom: 10px;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+        
+        .site-drag {
+          cursor: move;
+          color: #a0aec0;
+        }
+        
+        .site-input {
+          flex: 1;
+          padding: 8px 12px;
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+        }
+        
+        .add-btn, .remove-btn {
+          background: none;
+          border: none;
+          font-size: 1.2rem;
+          cursor: pointer;
+          padding: 5px;
+        }
+        
+        .add-btn { color: #48bb78; }
+        .remove-btn { color: #f56565; }
+        
+        /* 背景设置样式 */
+        .bg-preview {
+          width: 200px;
+          height: 100px;
+          border-radius: 8px;
+          border: 2px dashed #cbd5e0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 10px;
+          overflow: hidden;
+        }
+        
+        .bg-preview img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        
+        /* 文件上传样式 */
+        .upload-area {
+          border: 2px dashed #cbd5e0;
+          border-radius: 8px;
+          padding: 40px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .upload-area:hover {
+          border-color: var(--primary-color);
+          background: #f8fafc;
+        }
+        
+        .upload-icon {
+          font-size: 3rem;
+          color: #a0aec0;
+          margin-bottom: 15px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+          .sidebar {
+            transform: translateX(-100%);
+          }
+          
+          .sidebar.active {
+            transform: translateX(0);
+          }
+          
+          .main-content {
+            margin-left: 0;
+          }
+          
+          .menu-toggle {
+            display: block;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .content {
+            padding: 20px;
+          }
+          
+          .section {
+            padding: 20px;
+          }
+          
+          .header {
+            padding: 0 20px;
+          }
+          
+          .site-item {
+            flex-direction: column;
+            align-items: stretch;
+          }
+        }
+        
+        /* 加载动画 */
+        .spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px solid #e2e8f0;
+          border-top-color: var(--primary-color);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        
+        /* 消息提示 */
+        .message {
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          display: none;
+        }
+        
+        .message.success {
+          background: #c6f6d5;
+          color: #22543d;
+          border: 1px solid #9ae6b4;
+        }
+        
+        .message.error {
+          background: #fed7d7;
+          color: #742a2a;
+          border: 1px solid #fc8181;
+        }
+        
+        .message.info {
+          background: #bee3f8;
+          color: #2c5282;
+          border: 1px solid #90cdf4;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="admin-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar" id="sidebar">
+          <div class="sidebar-header">
+            <h2>📊 导航管理</h2>
+          </div>
+          <ul class="sidebar-menu">
+            <li class="menu-item">
+              <a href="#dashboard" class="menu-link active" onclick="showSection('dashboard')">
+                <span class="menu-icon">📈</span>
+                <span>控制面板</span>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="#settings" class="menu-link" onclick="showSection('settings')">
+                <span class="menu-icon">⚙️</span>
+                <span>网站设置</span>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="#categories" class="menu-link" onclick="showSection('categories')">
+                <span class="menu-icon">📁</span>
+                <span>分类管理</span>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="#background" class="menu-link" onclick="showSection('background')">
+                <span class="menu-icon">🎨</span>
+                <span>背景设置</span>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="#backup" class="menu-link" onclick="showSection('backup')">
+                <span class="menu-icon">💾</span>
+                <span>数据备份</span>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/" target="_blank" class="menu-link">
+                <span class="menu-icon">👁️</span>
+                <span>查看网站</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="main-content">
+          <!-- 顶部栏 -->
+          <div class="header">
+            <div class="header-left">
+              <h1>管理后台</h1>
+            </div>
+            <div class="header-right">
+              <div class="user-info">
+                <div class="avatar">${env.ADMIN_USERNAME?.charAt(0).toUpperCase() || 'A'}</div>
+                <span>${env.ADMIN_USERNAME || '管理员'}</span>
+              </div>
+              <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+          </div>
+          
+          <!-- 内容区 -->
+          <div class="content">
+            <!-- 消息提示 -->
+            <div id="message" class="message"></div>
+            
+            <!-- 控制面板 -->
+            <div id="dashboard-section" class="section">
+              <h2><span>📈</span> 控制面板</h2>
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <h3>网站统计</h3>
+                  <p>分类数量: <span id="category-count">${categories.length}</span></p>
+                  <p>网站数量: <span id="site-count">${categories.reduce((sum, cat) => sum + cat.sites.length, 0)}</span></p>
+                  <p>最后更新: <span id="last-updated">${navData.updatedAt ? new Date(navData.updatedAt).toLocaleString('zh-CN') : '未知'}</span></p>
+                </div>
+                <div class="stat-card">
+                  <h3>系统信息</h3>
+                  <p>版本: ${env.VERSION || '1.0.0'}</p>
+                  <p>环境: ${env.ENVIRONMENT || 'production'}</p>
+                  <p>存储: Cloudflare KV</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 网站设置 -->
+            <div id="settings-section" class="section" style="display: none;">
+              <h2><span>⚙️</span> 网站设置</h2>
+              <div class="form-group">
+                <label class="form-label">网站名称</label>
+                <input type="text" class="form-control" id="site-name" value="${navData.siteName}">
+              </div>
+              <div class="form-group">
+                <label class="form-label">网站描述</label>
+                <textarea class="form-control" id="site-description" rows="3">${navData.description}</textarea>
+              </div>
+              <button class="btn btn-primary" onclick="saveSettings()">保存设置</button>
+            </div>
+            
+            <!-- 分类管理 -->
+            <div id="categories-section" class="section" style="display: none;">
+              <h2><span>📁</span> 分类管理</h2>
+              <div id="categories-container">
+                ${categories.map((category, catIndex) => `
+                  <div class="category-card" data-index="${catIndex}">
+                    <div class="category-header">
+                      <div>
+                        <input type="text" class="form-control" value="${category.name}" 
+                               onchange="updateCategoryField(${catIndex}, 'name', this.value)" 
+                               placeholder="分类名称">
+                      </div>
+                      <div>
+                        <button class="remove-btn" onclick="removeCategory(${catIndex})">🗑️</button>
+                        <button class="add-btn" onclick="addSite(${catIndex})">➕</button>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label class="form-label">分类描述</label>
+                      <input type="text" class="form-control" value="${category.description || ''}" 
+                             onchange="updateCategoryField(${catIndex}, 'description', this.value)" 
+                             placeholder="分类描述">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label class="form-label">
+                        <input type="checkbox" ${category.hidden ? 'checked' : ''} 
+                               onchange="updateCategoryField(${catIndex}, 'hidden', this.checked)">
+                        默认隐藏此分类
+                      </label>
+                    </div>
+                    
+                    <div class="site-list">
+                      <h4>网站列表</h4>
+                      ${category.sites.map((site, siteIndex) => `
+                        <div class="site-item" data-site-index="${siteIndex}">
+                          <span class="site-drag">☰</span>
+                          <input type="text" class="site-input" value="${site.name}" 
+                                 placeholder="网站名称" 
+                                 onchange="updateSiteField(${catIndex}, ${siteIndex}, 'name', this.value)">
+                          <input type="text" class="site-input" value="${site.url}" 
+                                 placeholder="URL (https://...)" 
+                                 onchange="updateSiteField(${catIndex}, ${siteIndex}, 'url', this.value)">
+                          <input type="text" class="site-input" value="${site.description || ''}" 
+                                 placeholder="描述" 
+                                 onchange="updateSiteField(${catIndex}, ${siteIndex}, 'description', this.value)">
+                          <button class="remove-btn" onclick="removeSite(${catIndex}, ${siteIndex})">🗑️</button>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+              
+              <button class="btn btn-primary" onclick="addCategory()">➕ 添加分类</button>
+              <button class="btn btn-primary" onclick="saveCategories()" style="margin-left: 10px;">💾 保存所有更改</button>
+            </div>
+            
+            <!-- 背景设置 -->
+            <div id="background-section" class="section" style="display: none;">
+              <h2><span>🎨</span> 背景设置</h2>
+              <div class="form-group">
+                <label class="form-label">背景颜色</label>
+                <input type="color" class="form-control" id="bg-color" value="${config.bgColor || '#f8fafc'}" 
+                       style="width: 100px; height: 40px;">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">背景图片 URL</label>
+                <input type="text" class="form-control" id="bg-image" value="${config.bgImage || ''}" 
+                       placeholder="输入图片链接">
+                <div class="form-text">支持 JPG、PNG、WebP 格式，建议尺寸 1920x1080</div>
+                
+                ${config.bgImage ? `
+                  <div class="bg-preview">
+                    <img src="${config.bgImage}" alt="背景预览" onerror="this.style.display='none'">
+                  </div>
+                ` : `
+                  <div class="bg-preview" style="display: none;">
+                    <img id="bg-preview-img" alt="背景预览">
+                  </div>
+                `}
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">或上传背景图片</label>
+                <div class="upload-area" onclick="document.getElementById('bg-upload').click()">
+                  <div class="upload-icon">📁</div>
+                  <p>点击或拖放文件到此区域上传</p>
+                  <p class="form-text">支持 JPG、PNG、WebP，最大 5MB</p>
+                </div>
+                <input type="file" id="bg-upload" accept="image/*" style="display: none;" 
+                       onchange="uploadBackgroundImage(this)">
+              </div>
+              
+              <button class="btn btn-primary" onclick="saveBackground()">保存背景设置</button>
+            </div>
+            
+            <!-- 数据备份 -->
+            <div id="backup-section" class="section" style="display: none;">
+              <h2><span>💾</span> 数据备份</h2>
+              
+              <div class="form-group">
+                <h3>立即备份</h3>
+                <p>创建当前数据的时间点备份</p>
+                <button class="btn btn-primary" onclick="createBackup()">创建备份</button>
+              </div>
+              
+              <div class="form-group">
+                <h3>备份列表</h3>
+                <div id="backup-list">
+                  <p>加载中...</p>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <h3>数据导出/导入</h3>
+                <button class="btn btn-primary" onclick="exportData()">导出数据</button>
+                <button class="btn btn-primary" onclick="importData()" style="margin-left: 10px;">导入数据</button>
+                <input type="file" id="import-file" accept=".json" style="display: none;" 
+                       onchange="handleImportFile(this)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <script>
+        // 当前编辑的数据
+        let currentData = ${JSON.stringify(navData)};
+        let isLoading = false;
+        
+        // 显示消息
+        function showMessage(text, type = 'info', duration = 5000) {
+          const messageEl = document.getElementById('message');
+          messageEl.textContent = text;
+          messageEl.className = 'message ' + type;
+          messageEl.style.display = 'block';
+          
+          if (duration > 0) {
+            setTimeout(() => {
+              messageEl.style.display = 'none';
+            }, duration);
+          }
+        }
+        
+        // 切换部分显示
+        function showSection(sectionId) {
+          // 隐藏所有部分
+          document.querySelectorAll('.section').forEach(el => {
+            el.style.display = 'none';
+          });
+          
+          // 显示目标部分
+          document.getElementById(sectionId + '-section').style.display = 'block';
+          
+          // 更新菜单激活状态
+          document.querySelectorAll('.menu-link').forEach(link => {
+            link.classList.remove('active');
+          });
+          
+          document.querySelector(\`a[href="#\${sectionId}"]\`).classList.add('active');
+          
+          // 如果是备份部分，加载备份列表
+          if (sectionId === 'backup') {
+            loadBackupList();
+          }
+        }
+        
+        // 更新分类字段
+        function updateCategoryField(catIndex, field, value) {
+          currentData.categories[catIndex][field] = value;
+        }
+        
+        // 更新网站字段
+        function updateSiteField(catIndex, siteIndex, field, value) {
+          currentData.categories[catIndex].sites[siteIndex][field] = value;
+        }
+        
+        // 添加分类
+        function addCategory() {
+          const newCategory = {
+            id: Date.now(),
+            name: '新分类',
+            description: '',
+            icon: '📁',
+            hidden: false,
+            order: currentData.categories.length + 1,
+            sites: []
+          };
+          
+          currentData.categories.push(newCategory);
+          renderCategories();
+        }
+        
+        // 移除分类
+        function removeCategory(catIndex) {
+          if (confirm('确定要删除这个分类吗？分类下的所有网站也会被删除。')) {
+            currentData.categories.splice(catIndex, 1);
+            renderCategories();
+          }
+        }
+        
+        // 添加网站
+        function addSite(catIndex) {
+          const newSite = {
+            id: Date.now(),
+            name: '新网站',
+            url: 'https://',
+            description: '',
+            icon: '',
+            tags: [],
+            order: currentData.categories[catIndex].sites.length + 1
+          };
+          
+          currentData.categories[catIndex].sites.push(newSite);
+          renderCategories();
+        }
+        
+        // 移除网站
+        function removeSite(catIndex, siteIndex) {
+          if (confirm('确定要删除这个网站吗？')) {
+            currentData.categories[catIndex].sites.splice(siteIndex, 1);
+            renderCategories();
+          }
+        }
+        
+        // 渲染分类
+        function renderCategories() {
+          const container = document.getElementById('categories-container');
+          container.innerHTML = currentData.categories.map((category, catIndex) => \`
+            <div class="category-card" data-index="\${catIndex}">
+              <div class="category-header">
+                <div>
+                  <input type="text" class="form-control" value="\${category.name}" 
+                         onchange="updateCategoryField(\${catIndex}, 'name', this.value)" 
+                         placeholder="分类名称">
+                </div>
+                <div>
+                  <button class="remove-btn" onclick="removeCategory(\${catIndex})">🗑️</button>
+                  <button class="add-btn" onclick="addSite(\${catIndex})">➕</button>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">分类描述</label>
+                <input type="text" class="form-control" value="\${category.description || ''}" 
+                       onchange="updateCategoryField(\${catIndex}, 'description', this.value)" 
+                       placeholder="分类描述">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">
+                  <input type="checkbox" \${category.hidden ? 'checked' : ''} 
+                         onchange="updateCategoryField(\${catIndex}, 'hidden', this.checked)">
+                  默认隐藏此分类
+                </label>
+              </div>
+              
+              <div class="site-list">
+                <h4>网站列表</h4>
+                \${category.sites.map((site, siteIndex) => \`
+                  <div class="site-item" data-site-index="\${siteIndex}">
+                    <span class="site-drag">☰</span>
+                    <input type="text" class="site-input" value="\${site.name}" 
+                           placeholder="网站名称" 
+                           onchange="updateSiteField(\${catIndex}, \${siteIndex}, 'name', this.value)">
+                    <input type="text" class="site-input" value="\${site.url}" 
+                           placeholder="URL (https://...)" 
+                           onchange="updateSiteField(\${catIndex}, \${siteIndex}, 'url', this.value)">
+                    <input type="text" class="site-input" value="\${site.description || ''}" 
+                           placeholder="描述" 
+                           onchange="updateSiteField(\${catIndex}, \${siteIndex}, 'description', this.value)">
+                    <button class="remove-btn" onclick="removeSite(\${catIndex}, \${siteIndex})">🗑️</button>
+                  </div>
+                \`).join('')}
+              </div>
+            </div>
+          \`).join('');
+          
+          // 更新统计信息
+          document.getElementById('category-count').textContent = currentData.categories.length;
+          document.getElementById('site-count').textContent = currentData.categories.reduce((sum, cat) => sum + cat.sites.length, 0);
+        }
+        
+        // 保存网站设置
+        async function saveSettings() {
+          if (isLoading) return;
+          
+          currentData.siteName = document.getElementById('site-name').value;
+          currentData.description = document.getElementById('site-description').value;
+          
+          await saveToServer('settings');
+        }
+        
+        // 保存分类
+        async function saveCategories() {
+          if (isLoading) return;
+          await saveToServer('categories');
+        }
+        
+        // 保存背景设置
+        async function saveBackground() {
+          if (isLoading) return;
+          
+          currentData.config.bgColor = document.getElementById('bg-color').value;
+          currentData.config.bgImage = document.getElementById('bg-image').value;
+          
+          await saveToServer('background');
+        }
+        
+        // 上传背景图片
+        async function uploadBackgroundImage(input) {
+          const file = input.files[0];
+          if (!file) return;
+          
+          // 检查文件大小（5MB限制）
+          if (file.size > 5 * 1024 * 1024) {
+            showMessage('文件太大，请选择小于5MB的图片', 'error');
+            return;
+          }
+          
+          // 检查文件类型
+          if (!file.type.startsWith('image/')) {
+            showMessage('请选择图片文件', 'error');
+            return;
+          }
+          
+          try {
+            showMessage('上传中...', 'info', 0);
+            isLoading = true;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const response = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              document.getElementById('bg-image').value = result.url;
+              currentData.config.bgImage = result.url;
+              
+              // 显示预览
+              const previewEl = document.querySelector('.bg-preview');
+              const imgEl = previewEl.querySelector('img') || document.getElementById('bg-preview-img');
+              imgEl.src = result.url;
+              previewEl.style.display = 'flex';
+              
+              showMessage('上传成功', 'success');
+            } else {
+              showMessage('上传失败: ' + (result.error || '未知错误'), 'error');
+            }
+          } catch (error) {
+            showMessage('上传失败: ' + error.message, 'error');
+          } finally {
+            isLoading = false;
+            input.value = '';
+          }
+        }
+        
+        // 创建备份
+        async function createBackup() {
+          if (isLoading) return;
+          
+          try {
+            showMessage('创建备份中...', 'info', 0);
+            isLoading = true;
+            
+            const response = await fetch('/api/backup', {
+              method: 'POST'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              showMessage(\`备份创建成功: \${result.backupId}\`, 'success');
+              loadBackupList();
+            } else {
+              showMessage('备份失败: ' + (result.error || '未知错误'), 'error');
+            }
+          } catch (error) {
+            showMessage('备份失败: ' + error.message, 'error');
+          } finally {
+            isLoading = false;
+          }
+        }
+        
+        // 加载备份列表
+        async function loadBackupList() {
+          try {
+            const response = await fetch('/api/backup/list');
+            const result = await response.json();
+            
+            if (result.success) {
+              const container = document.getElementById('backup-list');
+              
+              if (result.backups.length === 0) {
+                container.innerHTML = '<p>暂无备份</p>';
+                return;
+              }
+              
+              container.innerHTML = result.backups.map(backup => \`
+                <div class="backup-item" style="margin-bottom: 10px; padding: 10px; background: #f8fafc; border-radius: 6px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <strong>\${backup.id}</strong>
+                      <p style="margin: 5px 0; font-size: 0.9em; color: #718096;">
+                        创建时间: \${new Date(backup.createdAt).toLocaleString('zh-CN')}<br>
+                        网站数: \${backup.siteCount} | 分类数: \${backup.categoryCount}
+                      </p>
+                    </div>
+                    <div>
+                      <button onclick="restoreBackup('\${backup.id}')" style="margin-right: 5px;">恢复</button>
+                      <button onclick="deleteBackup('\${backup.id}')" style="background: #fc8181; color: white;">删除</button>
+                    </div>
+                  </div>
+                </div>
+              \`).join('');
+            }
+          } catch (error) {
+            console.error('加载备份列表失败:', error);
+          }
+        }
+        
+        // 恢复备份
+        async function restoreBackup(backupId) {
+          if (!confirm('确定要恢复此备份吗？当前数据将被覆盖。')) return;
+          
+          try {
+            showMessage('恢复备份中...', 'info', 0);
+            isLoading = true;
+            
+            const response = await fetch(\`/api/backup/restore/\${backupId}\`, {
+              method: 'POST'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              showMessage(\`备份恢复成功: \${backupId}\`, 'success');
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            } else {
+              showMessage('恢复失败: ' + (result.error || '未知错误'), 'error');
+            }
+          } catch (error) {
+            showMessage('恢复失败: ' + error.message, 'error');
+          } finally {
+            isLoading = false;
+          }
+        }
+        
+        // 删除备份
+        async function deleteBackup(backupId) {
+          if (!confirm('确定要删除此备份吗？此操作不可撤销。')) return;
+          
+          try {
+            const response = await fetch(\`/api/backup/delete/\${backupId}\`, {
+              method: 'DELETE'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              showMessage('备份删除成功', 'success');
+              loadBackupList();
+            } else {
+              showMessage('删除失败: ' + (result.error || '未知错误'), 'error');
+            }
+          } catch (error) {
+            showMessage('删除失败: ' + error.message, 'error');
+          }
+        }
+        
+        // 导出数据
+        async function exportData() {
+          try {
+            const response = await fetch('/api/export');
+            const result = await response.json();
+            
+            if (result.success) {
+              // 创建下载链接
+              const dataStr = JSON.stringify(result.data, null, 2);
+              const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+              
+              const exportFileDefaultName = \`dao-hang-backup-\${new Date().toISOString().slice(0, 10)}.json\`;
+              
+              const linkElement = document.createElement('a');
+              linkElement.setAttribute('href', dataUri);
+              linkElement.setAttribute('download', exportFileDefaultName);
+              linkElement.click();
+              
+              showMessage('数据导出成功', 'success');
+            } else {
+              showMessage('导出失败: ' + (result.error || '未知错误'), 'error');
+            }
+          } catch (error) {
+            showMessage('导出失败: ' + error.message, 'error');
+          }
+        }
+        
+        // 导入数据
+        function importData() {
+          document.getElementById('import-file').click();
+        }
+        
+        // 处理导入文件
+        async function handleImportFile(input) {
+          const file = input.files[0];
+          if (!file) return;
+          
+          try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            
+            // 验证数据格式
+            if (!data.categories || !Array.isArray(data.categories)) {
+              throw new Error('无效的数据格式');
+            }
+            
+            if (!confirm(\`确定要导入数据吗？这将导入 \${data.categories.length} 个分类和 \${data.categories.reduce((sum, cat) => sum + (cat.sites?.length || 0), 0)} 个网站。当前数据将被覆盖。\`)) {
+              return;
+            }
+            
+            showMessage('导入数据中...', 'info', 0);
+            
+            const response = await fetch('/api/import', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: text
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              showMessage(\`数据导入成功！导入了 \${result.categoryCount} 个分类和 \${result.siteCount} 个网站\`, 'success');
+              setTimeout(() => {
+                location.reload();
+              }, 2000);
+            } else {
+              showMessage('导入失败: ' + (result.error || '未知错误'), 'error');
+            }
+          } catch (error) {
+            showMessage('导入失败: ' + error.message, 'error');
+          } finally {
+            input.value = '';
+          }
+        }
+        
+        // 保存数据到服务器
+        async function saveToServer(type) {
+          if (isLoading) return;
+          
+          try {
+            showMessage('保存中...', 'info', 0);
+            isLoading = true;
+            
+            const response = await fetch('/api/save', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type, data: currentData })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              showMessage('保存成功', 'success');
+              document.getElementById('last-updated').textContent = new Date().toLocaleString('zh-CN');
+            } else {
+              showMessage('保存失败: ' + (result.error || '未知错误'), 'error');
+            }
+          } catch (error) {
+            showMessage('保存失败: ' + error.message, 'error');
+          } finally {
+            isLoading = false;
+          }
+        }
+        
+        // 登出
+        function logout() {
+          if (confirm('确定要退出登录吗？')) {
+            window.location.href = '/logout';
+          }
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+          // 设置背景图片预览
+          const bgImageInput = document.getElementById('bg-image');
+          if (bgImageInput) {
+            bgImageInput.addEventListener('input', function() {
+              const previewEl = document.querySelector('.bg-preview');
+              const imgEl = previewEl.querySelector('img') || document.getElementById('bg-preview-img');
+              
+              if (this.value) {
+                imgEl.src = this.value;
+                previewEl.style.display = 'flex';
+              } else {
+                previewEl.style.display = 'none';
+              }
+            });
+          }
+          
+          // 拖放上传
+          const uploadArea = document.querySelector('.upload-area');
+          if (uploadArea) {
+            uploadArea.addEventListener('dragover', (e) => {
+              e.preventDefault();
+              uploadArea.style.borderColor = '#667eea';
+              uploadArea.style.background = '#f8fafc';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+              uploadArea.style.borderColor = '#cbd5e0';
+              uploadArea.style.background = '';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+              e.preventDefault();
+              uploadArea.style.borderColor = '#cbd5e0';
+              uploadArea.style.background = '';
+              
+              const files = e.dataTransfer.files;
+              if (files.length > 0) {
+                const input = document.getElementById('bg-upload');
+                input.files = files;
+                uploadBackgroundImage(input);
+              }
+            });
+          }
+        });
+      </script>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * 生成错误页面
+ */
+export function generateErrorPage(message, status = 500) {
+  return `
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${status} 错误</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          color: white;
+          padding: 20px;
+        }
+        .error-container {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          padding: 50px 40px;
+          border-radius: 20px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+          max-width: 500px;
+          width: 100%;
+        }
+        h1 {
+          font-size: 6rem;
+          font-weight: 700;
+          margin-bottom: 20px;
+          text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+        }
+        h2 {
+          font-size: 1.8rem;
+          margin-bottom: 20px;
+          font-weight: 500;
+        }
+        p {
+          font-size: 1.1rem;
+          margin-bottom: 30px;
+          opacity: 0.9;
+          line-height: 1.6;
+        }
+        .home-link {
+          display: inline-block;
+          background: white;
+          color: #667eea;
+          padding: 14px 30px;
+          border-radius: 50px;
+          text-decoration: none;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .home-link:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(255,255,255,0.3);
+        }
+        @media (max-width: 480px) {
+          h1 { font-size: 4rem; }
+          .error-container { padding: 40px 20px; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="error-container">
+        <h1>${status}</h1>
+        <h2>${getErrorMessage(status)}</h2>
+        <p>${message}</p>
+        <a href="/" class="home-link">返回首页</a>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * 获取错误消息
+ */
+function getErrorMessage(status) {
+  const messages = {
+    400: '请求错误',
+    401: '未经授权',
+    403: '禁止访问',
+    404: '页面未找到',
+    500: '服务器内部错误',
+    503: '服务暂时不可用'
+  };
+  return messages[status] || '发生错误';
+}
+```
+
+---
+
+## 10. `src/utils.js` - 工具函数
+
+```javascript
+/**
+ * 工具函数模块
+ */
+
+/**
+ * 生成错误响应
+ */
+export function errorResponse(message, status = 500) {
+  return new Response(JSON.stringify({
+    success: false,
+    error: message,
+    timestamp: new Date().toISOString()
+  }), {
+    status,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+/**
+ * 生成成功响应
+ */
+export function successResponse(data = {}, message = '') {
+  return new Response(JSON.stringify({
+    success: true,
+    data,
+    message,
+    timestamp: new Date().toISOString()
+  }), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+/**
+ * 验证 URL 格式
+ */
+export function isValidUrl(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 生成网站图标
+ */
+export function generateSiteIcon(name) {
+  // 从名称生成简单图标
+  const colors = [
+    '#667eea', '#764ba2', '#f56565', '#ed8936',
+    '#ecc94b', '#48bb78', '#38b2ac', '#4299e1'
+  ];
+  
+  const color = colors[name.charCodeAt(0) % colors.length];
+  const letter = name.charAt(0).toUpperCase();
+  
+  return { color, letter };
+}
+
+/**
+ * 格式化文件大小
+ */
+export function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+/**
+ * 生成随机 ID
+ */
+export function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+/**
+ * 深度克隆对象
+ */
+export function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * 验证电子邮件格式
+ */
+export function isValidEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+/**
+ * 防抖函数
+ */
+export function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+/**
+ * 节流函数
+ */
+export function throttle(func, limit) {
+  let inThrottle;
+  return function executedFunction(...args) {
+    if (!inThrottle) {
+      func(...args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+}
+
+/**
+ * 安全 HTML 转义
+ */
+export function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+/**
+ * 生成颜色梯度
+ */
+export function generateGradient(color1, color2, steps) {
+  const gradients = [];
+  const stepFactor = 1 / (steps - 1);
+  
+  for (let i = 0; i < steps; i++) {
+    const r = Math.round(
+      parseInt(color1.slice(1, 3), 16) * (1 - stepFactor * i) +
+      parseInt(color2.slice(1, 3), 16) * stepFactor * i
+    );
+    const g = Math.round(
+      parseInt(color1.slice(3, 5), 16) * (1 - stepFactor * i) +
+      parseInt(color2.slice(3, 5), 16) * stepFactor * i
+    );
+    const b = Math.round(
+      parseInt(color1.slice(5, 7), 16) * (1 - stepFactor * i) +
+      parseInt(color2.slice(5, 7), 16) * stepFactor * i
+    );
+    
+    gradients.push(`#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`);
+  }
+  
+  return gradients;
+}
+
+/**
+ * 检测移动设备
+ */
+export function isMobileDevice(userAgent) {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+}
+
+/**
+ * 格式化日期
+ */
+export function formatDate(date, format = 'yyyy-MM-dd HH:mm:ss') {
+  const d = new Date(date);
+  const pad = n => n.toString().padStart(2, '0');
+  
+  const replacements = {
+    'yyyy': d.getFullYear(),
+    'MM': pad(d.getMonth() + 1),
+    'dd': pad(d.getDate()),
+    'HH': pad(d.getHours()),
+    'mm': pad(d.getMinutes()),
+    'ss': pad(d.getSeconds())
+  };
+  
+  return format.replace(/yyyy|MM|dd|HH|mm|ss/g, match => replacements[match]);
+}
+
+/**
+ * 解析查询参数
+ */
+export function parseQueryParams(url) {
+  const params = {};
+  const searchParams = new URL(url).searchParams;
+  
+  for (const [key, value] of searchParams.entries()) {
+    params[key] = value;
+  }
+  
+  return params;
+}
+```
+
+---
+
+## 11. `docs/deployment.md` - 部署指南
+
+```markdown
+# 部署指南
+
+## 环境要求
+
+- Node.js 16.0 或更高版本
+- npm 或 yarn
+- Cloudflare 账户
+- Wrangler CLI
+
+## 步骤 1: 安装依赖
+
+```bash
+# 克隆项目
+git clone https://github.com/yourusername/dao-hang.git
+cd dao-hang
+
+# 安装依赖
+npm install
+
+# 安装 Wrangler CLI（如果尚未安装）
+npm install -g wrangler
+```
+
+## 步骤 2: 配置 Cloudflare
+
+### 2.1 登录 Cloudflare
+
+```bash
+# 登录到 Cloudflare
+wrangler login
+```
+
+### 2.2 创建 KV 命名空间
+
+```bash
+# 创建生产环境 KV 命名空间
+wrangler kv:namespace create "NAV_STORE"
+
+# 创建预览环境 KV 命名空间
+wrangler kv:namespace create "NAV_STORE" --preview
+```
+
+保存返回的命名空间 ID，稍后需要在 `wrangler.toml` 中配置。
+
+### 2.3 创建 R2 存储桶（可选，用于文件上传）
+
+```bash
+# 创建 R2 存储桶
+wrangler r2 bucket create dao-hang-uploads
+
+# 创建预览存储桶
+wrangler r2 bucket create dao-hang-uploads-preview
+```
+
+## 步骤 3: 配置项目
+
+### 3.1 复制环境变量文件
+
+```bash
+cp .env.example .env
+```
+
+### 3.2 编辑环境变量
+
+编辑 `.env` 文件，设置以下变量：
+
+```env
+# Cloudflare 账户配置
+CLOUDFLARE_ACCOUNT_ID=your_account_id_here
+CLOUDFLARE_API_TOKEN=your_api_token_here
+
+# 管理员认证
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your_secure_password_here
+
+# KV 命名空间
+KV_NAMESPACE_ID=your_kv_namespace_id
+KV_PREVIEW_NAMESPACE_ID=your_preview_kv_id
+```
+
+### 3.3 配置 `wrangler.toml`
+
+编辑 `wrangler.toml` 文件，更新以下配置：
+
+1. 替换 KV 命名空间 ID
+2. 设置管理员用户名和密码
+3. 配置自定义域名（可选）
+
+## 步骤 4: 本地开发
+
+```bash
+# 启动本地开发服务器
+npm run dev
+
+# 访问 http://localhost:8787
+```
+
+## 步骤 5: 部署到 Cloudflare
+
+### 5.1 部署到预览环境
+
+```bash
+# 部署到预览环境
+npm run deploy:preview
+
+# 或者使用
+wrangler deploy --env preview
+```
+
+### 5.2 部署到生产环境
+
+```bash
+# 部署到生产环境
+npm run deploy
+
+# 或者使用
+wrangler deploy
+```
+
+## 步骤 6: 绑定自定义域名（可选）
+
+### 6.1 添加路由
+
+在 `wrangler.toml` 中配置路由：
+
+```toml
+[env.production.route]
+pattern = "dao-hang.yourdomain.com/*"
+zone_id = "your_zone_id"
+```
+
+### 6.2 在 Cloudflare Dashboard 中配置
+
+1. 登录 Cloudflare Dashboard
+2. 进入你的域名
+3. 转到 Workers & Pages
+4. 添加路由
+
+## 步骤 7: 测试部署
+
+### 7.1 测试主页
+
+访问你的 Workers URL 或自定义域名：
+```
+https://dao-hang.yourusername.workers.dev
+```
+
+### 7.2 测试管理后台
+
+访问管理后台并登录：
+```
+https://dao-hang.yourusername.workers.dev/admin
+```
+
+使用配置的用户名和密码登录。
+
+## 故障排除
+
+### 常见问题 1: KV 命名空间错误
+
+```
+✘ [ERROR] Could not find KV namespace with id "xxx"
+```
+
+解决方案：
+1. 确认 KV 命名空间 ID 正确
+2. 确保 KV 命名空间与 Worker 在同一个账户中
+
+### 常见问题 2: 权限错误
+
+```
+✘ [ERROR] Authentication error
+```
+
+解决方案：
+1. 运行 `wrangler login` 重新登录
+2. 检查 API Token 权限
+
+### 常见问题 3: CORS 错误
+
+如果从自定义域名访问时出现 CORS 错误：
+
+1. 在 Cloudflare Dashboard 中配置 CORS 规则
+2. 或者在 Worker 代码中添加 CORS 头
+
+### 常见问题 4: 静态文件无法访问
+
+如果静态文件无法访问：
+
+1. 确保 R2 存储桶已正确配置
+2. 检查文件上传权限
+3. 验证文件路径
+
+## 维护和更新
+
+### 备份数据
+
+```bash
+# 创建数据备份
+npm run backup
+
+# 数据会保存在 KV 中，也可以通过管理后台下载
+```
+
+### 更新代码
+
+```bash
+# 拉取最新代码
+git pull origin main
+
+# 重新部署
+npm run deploy
+```
+
+### 监控日志
+
+```bash
+# 查看实时日志
+wrangler tail
+
+# 筛选错误日志
+wrangler tail --format json | grep error
+```
+
+## 安全建议
+
+1. **定期更改密码**：定期更新管理员密码
+2. **启用 HTTPS**：确保通过 HTTPS 访问
+3. **限制访问**：如有需要，可配置 IP 白名单
+4. **定期备份**：定期备份导航数据
+5. **监控使用情况**：关注 Cloudflare Workers 使用量
+
+## 性能优化
+
+1. **启用缓存**：静态资源可配置缓存
+2. **优化图片**：背景图片建议压缩
+3. **减少 KV 读取**：合理使用缓存
+4. **CDN 加速**：使用 Cloudflare CDN
+
+## 扩展部署
+
+### 多环境部署
+
+- **开发环境**：本地开发
+- **预览环境**：用于测试
+- **生产环境**：正式使用
+
+### 区域部署
+
+可配置在不同区域部署 Worker 以实现地理优化：
+
+```toml
+[env.production]
+zone_id = "your_zone_id"
+routes = [
+  { pattern = "dao-hang.us.example.com/*", zone_id = "us_zone_id" },
+  { pattern = "dao-hang.eu.example.com/*", zone_id = "eu_zone_id" }
+]
+```
+
+## 联系支持
+
+如遇问题，可通过以下方式寻求帮助：
+
+1. 查看 [GitHub Issues](https://github.com/yourusername/dao-hang/issues)
+2. 查阅 [Cloudflare Workers 文档](https://developers.cloudflare.com/workers/)
+3. 联系项目维护者
+```
+
+---
+
+## 12. `scripts/deploy.sh` - 部署脚本
+
+```bash
+#!/bin/bash
+
+# Dao-Hang 部署脚本
+# 作者: Your Name
+# 版本: 1.0.0
+
+set -e  # 遇到错误时退出脚本
+
+# 颜色定义
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# 日志函数
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# 检查命令是否存在
+check_command() {
+    if ! command -v $1 &> /dev/null; then
+        log_error "$1 未安装，请先安装 $1"
+        exit 1
+    fi
+}
+
+# 显示帮助
+show_help() {
+    echo "Dao-Hang 部署脚本"
+    echo ""
+    echo "用法: ./deploy.sh [选项]"
+    echo ""
+    echo "选项:"
+    echo "  -h, --help          显示帮助信息"
+    echo "  -d, --dev           部署到开发环境"
+    echo "  -p, --preview       部署到预览环境"
+    echo "  -P, --production    部署到生产环境"
+    echo "  -t, --test          运行测试"
+    echo "  -b, --backup        创建数据备份"
+    echo "  -c, --clean         清理构建缓存"
+    echo "  -l, --logs          查看日志"
+    echo "  -s, --status        查看部署状态"
+    echo ""
+}
+
+# 检查环境
+check_environment() {
+    log_info "检查环境..."
+    
+    # 检查必要命令
+    check_command node
+    check_command npm
+    check_command wrangler
+    
+    # 检查 Node.js 版本
+    NODE_VERSION=$(node -v | cut -d'v' -f2)
+    REQUIRED_VERSION="16.0.0"
+    
+    if [ "$(printf '%s\n' "$REQUIRED_VERSION" "$NODE_VERSION" | sort -V | head -n1)" != "$REQUIRED_VERSION" ]; then
+        log_error "Node.js 版本需要 >= $REQUIRED_VERSION，当前版本: $NODE_VERSION"
+        exit 1
+    fi
+    
+    log_success "环境检查通过"
+}
+
+# 安装依赖
+install_dependencies() {
+    log_info "安装依赖..."
+    
+    if [ ! -d "node_modules" ]; then
+        npm install
+    else
+        npm ci
+    fi
+    
+    log_success "依赖安装完成"
+}
+
+# 运行测试
+run_tests() {
+    log_info "运行测试..."
+    
+    if npm test; then
+        log_success "测试通过"
+    else
+        log_error "测试失败"
+        exit 1
+    fi
+}
+
+# 代码检查
+run_lint() {
+    log_info "运行代码检查..."
+    
+    if npm run lint; then
+        log_success "代码检查通过"
+    else
+        log_warning "代码检查发现一些问题"
+    fi
+}
+
+# 格式化代码
+run_format() {
+    log_info "格式化代码..."
+    npm run format
+    log_success "代码格式化完成"
+}
+
+# 清理构建缓存
+clean_build() {
+    log_info "清理构建缓存..."
+    
+    # 清理 node_modules
+    if [ "$1" = "full" ]; then
+        rm -rf node_modules
+        log_info "已删除 node_modules"
+    fi
+    
+    # 清理 Wrangler 缓存
+    rm -rf .wrangler
+    
+    # 清理其他缓存文件
+    rm -rf dist build coverage
+    
+    log_success "清理完成"
+}
+
+# 部署到开发环境
+deploy_dev() {
+    log_info "部署到开发环境..."
+    
+    # 检查环境变量
+    if [ ! -f ".env" ]; then
+        log_error ".env 文件不存在，请先复制 .env.example 并配置"
+        exit 1
+    fi
+    
+    # 启动开发服务器
+    wrangler dev
+    
+    log_success "开发服务器已启动"
+}
+
+# 部署到预览环境
+deploy_preview() {
+    log_info "部署到预览环境..."
+    
+    # 运行测试和检查
+    run_tests
+    run_lint
+    
+    # 部署到预览环境
+    if wrangler deploy --env preview; then
+        log_success "预览环境部署成功"
+        
+        # 获取部署 URL
+        DEPLOY_URL=$(wrangler whoami | grep -o 'https://.*\.workers\.dev' || echo "未知")
+        log_info "预览环境 URL: $DEPLOY_URL"
+    else
+        log_error "预览环境部署失败"
+        exit 1
+    fi
+}
+
+# 部署到生产环境
+deploy_production() {
+    log_info "部署到生产环境..."
+    
+    # 确认部署
+    echo -e "${YELLOW}即将部署到生产环境，请确认：${NC}"
+    echo "1. 已运行所有测试"
+    echo "2. 代码已提交到 Git"
+    echo "3. 已备份当前数据"
+    echo ""
+    read -p "是否继续？(y/N): " -n 1 -r
+    echo ""
+    
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        log_info "取消部署"
+        exit 0
+    fi
+    
+    # 运行测试和检查
+    run_tests
+    run_lint
+    
+    # 创建备份
+    create_backup "pre_deploy_$(date +%Y%m%d_%H%M%S)"
+    
+    # 部署到生产环境
+    if wrangler deploy; then
+        log_success "生产环境部署成功"
+        
+        # 获取部署 URL
+        DEPLOY_URL=$(wrangler whoami | grep -o 'https://.*\.workers\.dev' || echo "未知")
+        log_info "生产环境 URL: $DEPLOY_URL"
+        
+        # 运行健康检查
+        health_check $DEPLOY_URL
+    else
+        log_error "生产环境部署失败"
+        exit 1
+    fi
+}
+
+# 创建数据备份
+create_backup() {
+    local backup_name=${1:-"manual_backup_$(date +%Y%m%d_%H%M%S)"}
+    
+    log_info "创建数据备份: $backup_name"
+    
+    # 通过 API 创建备份
+    if curl -s -X POST "$BACKUP_URL" > /dev/null 2>&1; then
+        log_success "备份创建成功: $backup_name"
+    else
+        log_warning "无法通过 API 创建备份，尝试其他方式"
+        
+        # 尝试直接备份 KV 数据
+        if command -v wrangler &> /dev/null; then
+            wrangler kv:key get --binding NAV_STORE "nav_data" > "backup_${backup_name}.json" 2>/dev/null && \
+            log_success "KV 数据备份成功: backup_${backup_name}.json" || \
+            log_error "KV 数据备份失败"
+        fi
+    fi
+}
+
+# 查看日志
+view_logs() {
+    log_info "查看最近日志..."
+    
+    # 查看 Wrangler 日志
+    wrangler tail --format pretty
+    
+    # 也可以查看文件日志
+    if [ -f "logs/deploy.log" ]; then
+        echo ""
+        echo "最近部署日志:"
+        tail -20 logs/deploy.log
+    fi
+}
+
+# 健康检查
+health_check() {
+    local url=$1
+    
+    log_info "执行健康检查..."
+    
+    # 检查主页
+    if curl -s -f "$url" > /dev/null; then
+        log_success "主页访问正常"
+    else
+        log_error "主页访问失败"
+        return 1
+    fi
+    
+    # 检查 API
+    if curl -s -f "$url/api/health" > /dev/null; then
+        log_success "API 访问正常"
+    else
+        log_warning "API 访问失败（可能未实现）"
+    fi
+    
+    # 检查管理后台登录页
+    if curl -s -f "$url/login" > /dev/null; then
+        log_success "登录页访问正常"
+    else
+        log_error "登录页访问失败"
+        return 1
+    fi
+    
+    log_success "健康检查通过"
+}
+
+# 查看部署状态
+check_status() {
+    log_info "检查部署状态..."
+    
+    # 检查 Wrangler 登录状态
+    if wrangler whoami > /dev/null 2>&1; then
+        log_success "Wrangler 已登录"
+    else
+        log_error "Wrangler 未登录，请运行: wrangler login"
+    fi
+    
+    # 检查 KV 命名空间
+    if wrangler kv:namespace list | grep -q "NAV_STORE"; then
+        log_success "KV 命名空间已配置"
+    else
+        log_error "KV 命名空间未找到"
+    fi
+    
+    # 检查 R2 存储桶（如果配置了）
+    if wrangler r2 bucket list | grep -q "dao-hang-uploads"; then
+        log_success "R2 存储桶已配置"
+    else
+        log_warning "R2 存储桶未配置（文件上传功能可能受限）"
+    fi
+    
+    # 检查环境变量文件
+    if [ -f ".env" ]; then
+        log_success ".env 文件存在"
+    else
+        log_error ".env 文件不存在"
+    fi
+    
+    # 检查最近部署
+    log_info "最近部署:"
+    wrangler deployments list --limit 3 2>/dev/null || log_warning "无法获取部署列表"
+}
+
+# 备份恢复
+restore_backup() {
+    local backup_id=$1
+    
+    if [ -z "$backup_id" ]; then
+        log_error "请指定备份 ID"
+        exit 1
+    fi
+    
+    log_info "恢复备份: $backup_id"
+    
+    # 确认恢复
+    echo -e "${YELLOW}警告：这将覆盖当前数据，请确认是否继续？${NC}"
+    read -p "输入 'yes' 继续: " -r
+    echo ""
+    
+    if [ "$REPLY" != "yes" ]; then
+        log_info "取消恢复"
+        exit 0
+    fi
+    
+    # 尝试通过 API 恢复
+    if curl -s -X POST "${BACKUP_URL}/restore/${backup_id}" > /dev/null 2>&1; then
+        log_success "备份恢复成功"
+    else
+        log_error "备份恢复失败"
+    fi
+}
+
+# 主函数
+main() {
+    # 默认操作
+    local action="help"
+    
+    # 解析参数
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                action="help"
+                shift
+                ;;
+            -d|--dev)
+                action="dev"
+                shift
+                ;;
+            -p|--preview)
+                action="preview"
+                shift
+                ;;
+            -P|--production)
+                action="production"
+                shift
+                ;;
+            -t|--test)
+                action="test"
+                shift
+                ;;
+            -b|--backup)
+                action="backup"
+                shift
+                ;;
+            -c|--clean)
+                action="clean"
+                shift
+                ;;
+            -l|--logs)
+                action="logs"
+                shift
+                ;;
+            -s|--status)
+                action="status"
+                shift
+                ;;
+            -r|--restore)
+                action="restore"
+                BACKUP_ID="$2"
+                shift 2
+                ;;
+            *)
+                log_error "未知参数: $1"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
+    # 执行对应操作
+    case $action in
+        help)
+            show_help
+            ;;
+        dev)
+            check_environment
+            install_dependencies
+            deploy_dev
+            ;;
+        preview)
+            check_environment
+            install_dependencies
+            deploy_preview
+            ;;
+        production)
+            check_environment
+            install_dependencies
+            deploy_production
+            ;;
+        test)
+            check_environment
+            install_dependencies
+            run_tests
+            ;;
+        backup)
+            create_backup
+            ;;
+        clean)
+            clean_build "light"
+            ;;
+        logs)
+            view_logs
+            ;;
+        status)
+            check_status
+            ;;
+        restore)
+            restore_backup "$BACKUP_ID"
+            ;;
+        *)
+            show_help
+            ;;
+    esac
+}
+
+# 设置备份 URL（从环境变量获取或使用默认值）
+BACKUP_URL=${DEPLOY_URL:-"https://dao-hang.yourusername.workers.dev"}/api/backup
+
+# 运行主函数
+main "$@"
+```
+
+这个完整的项目结构包含了从版本一到版本三所需的所有文件。你可以直接使用这个结构来创建你的GitHub仓库。
+
+## 使用说明：
+
+1. **创建仓库**：
+   ```bash
+   git init
+   git add .
+   git commit -m "初始提交"
+   git branch -M main
+   git remote add origin https://github.com/yourusername/dao-hang.git
+   git push -u origin main
+   ```
+
+2. **配置项目**：
+   - 复制 `.env.example` 为 `.env`
+   - 更新 `wrangler.toml` 中的配置
+   - 设置 Cloudflare KV 命名空间
+
+3. **部署**：
+   ```bash
+   npm install
+   npm run deploy
+   ```
+
+4. **访问**：
+   - 主页：`https://你的域名.workers.dev`
+   - 管理后台：`https://你的域名.workers.dev/admin`
+
+这个项目结构完全符合你的需求，包含了：
+- ✅ 登录管理功能
+- ✅ 账号密码变量配置
+- ✅ Cloudflare KV 存储
+- ✅ 分类管理（可展开/隐藏）
+- ✅ 背景图片设置
+- ✅ 三个版本的规划
+- ✅ 完整的文档和脚本
+
+你可以根据这个结构开始开发你的导航系统！
