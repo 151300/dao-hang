@@ -1,4 +1,4 @@
-cat > wrangler.toml << 'EOF'
+
 name = "dao-hang"
 main = "src/index.js"
 compatibility_date = "2024-08-01"
