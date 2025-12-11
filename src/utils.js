@@ -1,4 +1,4 @@
-cat > src/utils.js << 'EOF'
+
 /**
  * 工具函数模块
  */
