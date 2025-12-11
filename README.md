@@ -1,4 +1,4 @@
-cat > README.md << 'EOF'
+
 # Dao-Hang 导航系统
 
 一个基于 Cloudflare Workers 的免费导航网站。
