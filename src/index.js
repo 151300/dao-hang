@@ -536,4 +536,3 @@ async function handleApiSave(request, env) {
     return errorResponse('保存数据时发生错误: ' + error.message, 500);
   }
 }
-EOF
