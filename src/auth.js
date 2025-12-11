@@ -1,4 +1,4 @@
-cat > src/auth.js << 'EOF'
+
 /**
  * 用户认证模块
  */
