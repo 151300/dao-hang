@@ -1,0 +1,19 @@
+cat > package.json << 'EOF'
+{
+  "name": "dao-hang",
+  "version": "1.0.0",
+  "description": "A free navigation website built on Cloudflare Workers",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:preview": "wrangler deploy --env preview"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
+EOF
