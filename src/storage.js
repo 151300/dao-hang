@@ -54,4 +54,3 @@ function getDefaultData(env) {
   
   return defaultData;
 }
-EOF
