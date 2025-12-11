@@ -1,4 +1,3 @@
-cat > package.json << 'EOF'
 {
   "name": "dao-hang",
   "version": "1.0.0",
@@ -16,4 +15,3 @@ cat > package.json << 'EOF'
     "node": ">=16.0.0"
   }
 }
-EOF
