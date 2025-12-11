@@ -1,4 +1,4 @@
-cat > src/templates.js << 'EOF'
+
 /**
  * HTML 模板模块
  */
