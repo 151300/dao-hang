@@ -1,4 +1,4 @@
-cat > src/config.js << 'EOF'
+
 /**
  * Dao-Hang 配置
  */
