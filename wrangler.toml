@@ -25,4 +25,3 @@ vars = { ADMIN_PASSWORD = "preview_password", ENVIRONMENT = "preview" }
 # 生产环境配置
 [env.production]
 vars = { ADMIN_PASSWORD = "${ADMIN_PASSWORD}", ENVIRONMENT = "production" }
-EOF
