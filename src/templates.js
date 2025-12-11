@@ -572,4 +572,3 @@ function getErrorMessage(status) {
   };
   return messages[status] || '发生错误';
 }
-EOF
